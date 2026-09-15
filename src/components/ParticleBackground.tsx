@@ -1,13 +1,18 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
-import Particles from "react-tsparticles";
-import { loadSlim } from "tsparticles-slim";
-import type { Engine, ISourceOptions } from "tsparticles-engine";
+import { useEffect, useState, useMemo } from "react";
+import Particles from "@tsparticles/react";
+import { loadSlim } from "@tsparticles/slim";
+import { tsParticles } from "@tsparticles/engine";
+import type { ISourceOptions } from "@tsparticles/engine";
 
 export default function ParticleBackground() {
-  const particlesInit = useCallback(async (engine: Engine) => {
-    await loadSlim(engine);
+  const [init, setInit] = useState(false);
+
+  useEffect(() => {
+    loadSlim(tsParticles).then(() => {
+      setInit(true);
+    });
   }, []);
 
   const options: ISourceOptions = useMemo(
@@ -83,10 +88,11 @@ export default function ParticleBackground() {
     [],
   );
 
+  if (!init) return null;
+
   return (
     <Particles
       id="tsparticles"
-      init={particlesInit}
       className="fixed inset-0 -z-10 pointer-events-none"
       options={options}
     />
